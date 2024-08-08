@@ -34,7 +34,14 @@ const playMusic = (track) => {
   currentSong.src = track;
   currentSong.play();
   play.src = "SVG/pause.svg";
-  document.querySelector(".songinfo").innerHTML = track;
+  const songName = track
+    .split("/")
+    .pop()
+    .replace(/\.mp3$/, "")
+    .replaceAll("%20", " ");
+  //songName = songName.replace(/_320\(PagalWorld\.com\.sb\)/, "");
+
+  document.querySelector(".songinfo").innerHTML = decodeURI(songName);
   document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
   seekbar.value = 0; // Reset seekbar when a new song starts
 };
@@ -59,7 +66,11 @@ async function main() {
       <li>
         <img src="SVG/music.svg" class="invert">
         <div class="info">
-          <div>${song.replaceAll("%20", " ")}</div>
+          <div>${song
+            .split("/")
+            .pop()
+            .replace(/\.mp3$/, "")
+            .replaceAll("%20", " ")}</div>
           <div>Artist Name</div>
         </div>
         <div class="playnow flex">
