@@ -263,9 +263,7 @@
 }
 
 .seekbar-wrapper {
-  
   width: 100%;
-  
 }
 
 #seekbar {
@@ -307,8 +305,6 @@
   border-radius: 50%;
   cursor: pointer;
 }
-
-
 
 .songtime {
   float: right;

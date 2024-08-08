@@ -96,7 +96,7 @@ async function main() {
     document.querySelector(".songtime").innerHTML = `${formatTime(
       currentTime
     )} / ${formatTime(duration)}`;
-    
+
     const progressPercent = (currentTime / duration) * 100;
     seekbar.value = progressPercent; // Update seekbar as song plays
   });
