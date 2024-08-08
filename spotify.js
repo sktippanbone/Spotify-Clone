@@ -2,12 +2,16 @@ console.log("Let's write JavaScript");
 let currentSong = new Audio();
 let currentSongIndex = 0;
 let songs = [];
+const play = document.getElementById("play");
+const next = document.getElementById("next");
+const previous = document.getElementById("previous");
+const seekbar = document.getElementById("seekbar");
 
 function formatTime(seconds) {
   seconds = Math.floor(seconds);
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
 async function getSongs() {
@@ -29,33 +33,34 @@ async function getSongs() {
 const playMusic = (track) => {
   currentSong.src = track;
   currentSong.play();
-  play.src = "pause.svg";
+  play.src = "SVG/pause.svg";
   document.querySelector(".songinfo").innerHTML = track;
   document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
-}
+  seekbar.value = 0; // Reset seekbar when a new song starts
+};
 
 const playNextSong = () => {
   currentSongIndex = (currentSongIndex + 1) % songs.length;
   playMusic(songs[currentSongIndex]);
-}
+};
 
 const playPreviousSong = () => {
   currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
   playMusic(songs[currentSongIndex]);
-}
+};
 
 async function main() {
   songs = await getSongs();
   console.log(songs);
 
-  let songUL = document.querySelector(".lists").getElementsByTagName("ul")[0];
+  let songUL = document.querySelector(".lists ul");
   for (const song of songs) {
     songUL.innerHTML += `
       <li>
         <img src="SVG/music.svg" class="invert">
         <div class="info">
           <div>${song.replaceAll("%20", " ")}</div>
-          <div> Artist Name</div>
+          <div>Artist Name</div>
         </div>
         <div class="playnow flex">
           Play Now
@@ -64,7 +69,7 @@ async function main() {
       </li>`;
   }
 
-  Array.from(document.querySelector(".lists").getElementsByTagName("li")).forEach((e, index) => {
+  Array.from(document.querySelectorAll(".lists li")).forEach((e, index) => {
     e.addEventListener("click", () => {
       console.log(e.querySelector(".info").firstElementChild.innerHTML);
       currentSongIndex = index;
@@ -72,14 +77,13 @@ async function main() {
     });
   });
 
-  
-  document.getElementById("play").addEventListener("click", () => {
+  play.addEventListener("click", () => {
     if (currentSong.paused) {
       currentSong.play();
-      document.getElementById("play").src = "SVG/pause.svg";
+      play.src = "SVG/pause.svg";
     } else {
       currentSong.pause();
-      document.getElementById("play").src = "SVG/play.svg";
+      play.src = "SVG/play.svg";
     }
   });
 
@@ -87,8 +91,19 @@ async function main() {
   previous.addEventListener("click", playPreviousSong);
 
   currentSong.addEventListener("timeupdate", () => {
-    console.log(currentSong.currentTime, currentSong.duration);
-    document.querySelector(".songtime").innerHTML = `${formatTime(currentSong.currentTime)} / ${formatTime(currentSong.duration)}`;
+    const currentTime = currentSong.currentTime;
+    const duration = currentSong.duration;
+    document.querySelector(".songtime").innerHTML = `${formatTime(
+      currentTime
+    )} / ${formatTime(duration)}`;
+    
+    const progressPercent = (currentTime / duration) * 100;
+    seekbar.value = progressPercent; // Update seekbar as song plays
+  });
+
+  seekbar.addEventListener("input", () => {
+    const seekTo = (seekbar.value / 100) * currentSong.duration;
+    currentSong.currentTime = seekTo; // Seek to the selected time
   });
 }
 
